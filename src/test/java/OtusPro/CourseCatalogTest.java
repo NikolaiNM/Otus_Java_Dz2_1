@@ -5,7 +5,7 @@ import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import pages.CourseCatalogPage;
-import pages.CourseCardPage;
+
 
 @ExtendWith(UIExtensions.class)
 public class CourseCatalogTest {
@@ -19,8 +19,7 @@ public class CourseCatalogTest {
 
     courseCatalogPage.open()
         .searchForCourse(courseName)
-        .findAndClickCourseByName(courseName);
-
-    courseCatalogPage.pageHeaderShouldBeSameAs(courseName);
+        .findAndClickCourseByName(courseName)
+        .pageHeaderShouldBeSameAs(courseName);
   }
 }

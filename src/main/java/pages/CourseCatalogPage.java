@@ -26,7 +26,6 @@ public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
     searchInput.sendKeys(courseName);
 
     waiters.waitForElementClickableByLocator(COURSE_TITLES);
-
     return this;
   }
 
