@@ -17,21 +17,25 @@ import java.util.stream.Collectors;
 @Path("/catalog/courses")
 public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
 
-  private static final By COURSE_TITLES = By.cssSelector("a.sc-zzdkm7-0 h6.sc-1x9oq14-0");
+
 
   private static final By SHOW_MORE_BUTTON = By.cssSelector("button.sc-mrx253-0.enxKCy.sc-prqxfo-0.cXVWAS");
+  public static final By SEARCH_INPUT = By.cssSelector("input[type='search']");
+
 
   private static final By COURSE_DATES = By.cssSelector("#__next section.sc-o4bnil-0 div.sc-18q05a6-0 > div > a > div.sc-1x9oq14-0 > div > div\n"); //  селектор по дате
-
   private static final By COURSE_NAME = By.cssSelector("#__next section.sc-o4bnil-0 div.sc-18q05a6-0 > div > a > h6 > div");// селектор по названию
 
-  private static final String TITLE_NAME_COURSE = ".sc-1ddwpfq-1 h1";// название курса на странице
+  private static final By COURSE_TITLES = By.cssSelector("a.sc-zzdkm7-0 h6.sc-1x9oq14-0");
+  private static final String TITLE_NAME_COURSE = ".sc-1ddwpfq-1 h1";
 
+  // название курса на странице
   private static final String
       START_DATE_COURSE = "#__next > div.sc-1j17uuq-0.klmZDZ.sc-1b3dhyb-0.bzaXwp > main > div > section > div.sc-x072mc-0.sc-3cb1l3-1.hOtCic.galmep > div > div:nth-child(1) > p\n";
 
   private static final By LINKS = By.cssSelector("#__next > div.sc-1j17uuq-0.klmZDZ.sc-1u2d5lq-0.oYOFo > main > div > section.sc-o4bnil-0.riKpM > div.sc-18q05a6-0.incGfX > div a[href^='/']");
-  //#__next > div.sc-1j17uuq-0.klmZDZ.sc-1u2d5lq-0.oYOFo > main > div > section.sc-o4bnil-0.riKpM > div.sc-18q05a6-0.incGfX > div a[href^="/"]
+
+
 
 
 
@@ -48,22 +52,20 @@ public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
   }
 
   public CourseCatalogPage searchForCourse(String courseName) {
-    WebElement searchInput = driver.findElement(By.cssSelector("input[type='search']"));
+    WebElement searchInput = driver.findElement(SEARCH_INPUT);
     searchInput.clear();
     searchInput.sendKeys(courseName);
 
-    waiters.waitForElementClickableByLocator(COURSE_TITLES);
+    waiters.waitForElementVisibleByLocator(COURSE_TITLES);
     return this;
   }
 
   public CourseCatalogPage findAndClickCourseByName(String courseName) {
-    // Используем Stream API для поиска курса по имени
-    WebElement course = driver.findElements(COURSE_TITLES).stream()
+    WebElement course = driver.findElements(COURSE_NAME).stream()
         .filter(c -> c.getText().trim().equalsIgnoreCase(courseName))
         .findFirst()
         .orElseThrow(() -> new AssertionError("Курс с именем '" + courseName + "' не найден."));
 
-    // Кликаем по найденному курсу
     course.click();
     return this;
   }
@@ -231,64 +233,6 @@ public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
     }
     return parsedDates; // Возвращаем список дат
   }
-
-
-  //------------------------------------------------
-  /*
-  public CourseCatalogPage verifyCoursesOnLinks() {
-    System.out.println("=== Старт проверки курсов ===");
-
-    // Проверяем, инициализированы ли индексы курсов
-    if (this.courseIndexes == null || this.courseIndexes.isEmpty()) {
-      throw new IllegalStateException("Индексы курсов не были найдены. Сначала вызовите findCoursesWithEarliestAndLatestDates.");
-    }
-    System.out.println("Индексы курсов: " + courseIndexes);
-
-    // Получаем список названий курсов
-    List<String> courseNames = getCourseNames();
-    System.out.println("Список названий курсов: " + courseNames);
-
-    // Итерируемся по индексам
-    for (int index : courseIndexes) {
-      try {
-        System.out.println("Обработка индекса: " + index);
-
-        // Получаем ссылку на курс
-        String courseLink = getCourseLinkByIndex(index);
-        System.out.println("Ссылка на курс для индекса " + index + ": " + courseLink);
-
-        if (courseLink != null && !courseLink.isEmpty()) {
-          // Загружаем страницу курса
-          System.out.println("Подключение к странице курса...");
-          Document coursePage = Jsoup.connect(courseLink).get();
-          System.out.println("Страница курса успешно загружена.");
-
-          // Извлекаем название курса из страницы
-          String actualCourseTitle = coursePage.select(TITLE_NAME_COURSE).text();
-          System.out.println("Извлечённое название курса: " + actualCourseTitle);
-
-          // Получаем ожидаемое название курса
-          String expectedCourseTitle = courseNames.get(index);
-          System.out.println("Ожидаемое название курса: " + expectedCourseTitle);
-
-          // Сравниваем названия
-          if (!expectedCourseTitle.equals(actualCourseTitle)) {
-            System.err.println("Ошибка: Название курса не совпадает! Ожидалось: " + expectedCourseTitle + ", но на странице: " + actualCourseTitle);
-          } else {
-            System.out.println("Название курса совпадает с ожидаемым: " + expectedCourseTitle);
-          }
-        } else {
-          System.err.println("Ссылка на курс для индекса " + index + " пуста или null.");
-        }
-      } catch (Exception e) {
-        System.err.println("Ошибка при проверке курса по ссылке для индекса " + index + ": " + e.getMessage());
-        e.printStackTrace();
-      }
-    }
-
-    System.out.println("=== Проверка курсов завершена ===");
-    return this;
-  } */
 
   public String getCourseLinkByIndex(int index) {
     try {
