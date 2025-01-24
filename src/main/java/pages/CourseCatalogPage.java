@@ -5,15 +5,14 @@ import com.google.inject.Inject;
 import commons.waiters.Waiters;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-
+//@Path("catalog/courses?search=Нагрузочное+тестирование&categories=programming")
 @Path("/catalog/courses")
 public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
 
@@ -29,15 +28,9 @@ public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
   private static final By COURSE_TITLES = By.cssSelector("a.sc-zzdkm7-0 h6.sc-1x9oq14-0");
   private static final String TITLE_NAME_COURSE = ".sc-1ddwpfq-1 h1";
 
-  // название курса на странице
   private static final String
       START_DATE_COURSE = "#__next > div.sc-1j17uuq-0.klmZDZ.sc-1b3dhyb-0.bzaXwp > main > div > section > div.sc-x072mc-0.sc-3cb1l3-1.hOtCic.galmep > div > div:nth-child(1) > p\n";
-
   private static final By LINKS = By.cssSelector("#__next > div.sc-1j17uuq-0.klmZDZ.sc-1u2d5lq-0.oYOFo > main > div > section.sc-o4bnil-0.riKpM > div.sc-18q05a6-0.incGfX > div a[href^='/']");
-
-
-
-
 
   private List<Integer> courseIndexes; // Поле для хранения индексов курсов
 
@@ -55,7 +48,6 @@ public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
     WebElement searchInput = driver.findElement(SEARCH_INPUT);
     searchInput.clear();
     searchInput.sendKeys(courseName);
-
     waiters.waitForElementVisibleByLocator(COURSE_TITLES);
     return this;
   }
@@ -70,74 +62,44 @@ public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
     return this;
   }
 
-
-
   public CourseCatalogPage clickShowMoreButtonUntilAllLoaded() {
     boolean buttonFound = true;
     while (buttonFound) {
       try {
-        // Выводим информацию о поиске кнопки
-        System.out.println("Ищем кнопку 'Показать ещё' на странице...");
-
-        // Пытаемся найти кнопку
         WebElement button = driver.findElement(SHOW_MORE_BUTTON);
 
         if (button.isDisplayed()) {
-          System.out.println("Кнопка найдена. Ожидаем её кликабельности...");
-
-          // Ожидание кликабельности кнопки
           waiters.waitForElementClickableByLocator(SHOW_MORE_BUTTON);
-
-          // Кликаем по кнопке
-          System.out.println("Кликаем на кнопку 'Показать ещё'.");
           button.click();
 
-          // Ждём явным ожиданием, пока кнопка снова не станет видимой
           waiters.waitForCondition(webDriver -> {
-            // Проверяем, что кнопка снова стала видимой
-            WebElement newButton = driver.findElement(SHOW_MORE_BUTTON);
-            return newButton.isDisplayed();
+            try {
+              WebElement newButton = driver.findElement(SHOW_MORE_BUTTON);
+              return newButton.isDisplayed();
+            } catch (StaleElementReferenceException e) {
+              return false;
+            }
           });
-
-          System.out.println("Ожидание завершено, проверяем снова...");
-        } else {
-          System.out.println("Кнопка 'Показать ещё' больше не отображается. Завершаем.");
-          buttonFound = false;
         }
-      } catch (NoSuchElementException e) {
-        // Обрабатываем ситуацию, когда кнопка не найдена
-        System.out.println("Кнопка 'Показать ещё' не найдена на странице, завершаем.");
-        buttonFound = false;
       } catch (Exception e) {
-        // Логируем ошибку, если что-то пошло не так
-        System.out.println("Произошла непредвиденная ошибка при попытке кликнуть по кнопке 'Показать ещё'.");
         buttonFound = false;
       }
     }
     return this;
   }
 
-
-
-
-  // Метод для обработки дат и нахождения курсов с самыми ранними и поздними датами
   public CourseCatalogPage findCoursesWithEarliestAndLatestDates() {
-    // Получаем даты курсов
     List<String> courseDates = getCourseDates();
     List<LocalDate> parsedDates = parseCourseDates(courseDates);
 
-    // Находим индексы курсов с самой ранней и самой поздней датой
     List<Integer> earliestIndexes = findCourseIndexesWithEarliestDate(parsedDates);
     List<Integer> latestIndexes = findCourseIndexesWithLatestDate(parsedDates);
 
-    // Объединяем индексы в одно поле
     this.courseIndexes = new ArrayList<>();
     this.courseIndexes.addAll(earliestIndexes);
     this.courseIndexes.addAll(latestIndexes);
 
-    // Печать для отладки
-    System.out.println("Индексы курсов с самой ранней и самой поздней датой: " + courseIndexes);
-    return this; // Возвращаем страницу для цепочки вызовов
+    return this;
   }
 
   // Метод для нахождения индекса курса с самой ранней датой
