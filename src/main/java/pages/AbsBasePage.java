@@ -30,14 +30,12 @@ public abstract class AbsBasePage<T> extends AbsCommons {
   public T pageHeaderShouldBeSameAs(String expectedHeader) {
     String actualHeader = header.getText();
 
-    // Выполняем асертацию, чтобы проверить совпадение заголовков
     assertThat(actualHeader)
         .as("Expected header: '%s', but found: '%s'", expectedHeader, actualHeader)
-        .isNotBlank() // Проверка, что заголовок не пустой
-        .isEqualTo(expectedHeader); // Сравнение с ожидаемым заголовком
+        .isNotBlank()
+        .isEqualTo(expectedHeader);
 
-    // Если асертация прошла успешно, выводим сообщение о совпадении заголовков
-    System.out.println("Headers match: '" + expectedHeader + "'");
+    System.out.println("Заголовки совпали: '" + expectedHeader + "'");
 
     return (T)this;
   }

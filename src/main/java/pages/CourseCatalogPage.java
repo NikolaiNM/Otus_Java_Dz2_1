@@ -3,16 +3,15 @@ package pages;
 import annotations.Path;
 import com.google.inject.Inject;
 import commons.waiters.Waiters;
+import org.assertj.core.api.SoftAssertions;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.openqa.selenium.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-//@Path("catalog/courses?search=Нагрузочное+тестирование&categories=programming")
 @Path("/catalog/courses")
 public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
 
@@ -85,6 +84,7 @@ public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
         buttonFound = false;
       }
     }
+    System.out.println("Показан весь список курсов");
     return this;
   }
 
@@ -102,17 +102,15 @@ public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
     return this;
   }
 
-  // Метод для нахождения индекса курса с самой ранней датой
   private static List<Integer> findCourseIndexesWithEarliestDate(List<LocalDate> dates) {
     List<Integer> indexes = new ArrayList<>();
     if (dates == null || dates.isEmpty()) return indexes;
 
-    // Фильтруем null значения
     List<LocalDate> nonNullDates = dates.stream()
         .filter(date -> date != null)
         .collect(Collectors.toList());
 
-    if (nonNullDates.isEmpty()) return indexes;  // Если после фильтрации дат нет, возвращаем пустой список
+    if (nonNullDates.isEmpty()) return indexes;
 
     LocalDate earliestDate = nonNullDates.stream()
         .min(LocalDate::compareTo)
@@ -128,17 +126,15 @@ public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
     return indexes;
   }
 
-  // Метод для нахождения индекса курса с самой поздней датой
   private static List<Integer> findCourseIndexesWithLatestDate(List<LocalDate> dates) {
     List<Integer> indexes = new ArrayList<>();
     if (dates == null || dates.isEmpty()) return indexes;
 
-    // Фильтруем null значения
     List<LocalDate> nonNullDates = dates.stream()
         .filter(date -> date != null)
         .collect(Collectors.toList());
 
-    if (nonNullDates.isEmpty()) return indexes;  // Если после фильтрации дат нет, возвращаем пустой список
+    if (nonNullDates.isEmpty()) return indexes;
 
     LocalDate latestDate = nonNullDates.stream()
         .max(LocalDate::compareTo)
@@ -154,161 +150,114 @@ public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
     return indexes;
   }
 
-
-  // Метод для получения названий курсов
   private List<String> getCourseNames() {
     List<WebElement> courseElements = driver.findElements(COURSE_NAME);
     List<String> courseNames = new ArrayList<>();
     for (WebElement course : courseElements) {
-      courseNames.add(course.getText()); // Получаем название каждого курса
+      courseNames.add(course.getText());
     }
-    return courseNames; // Возвращаем список названий курсов
+    return courseNames;
   }
 
-  // Метод для получения дат курсов
   private List<String> getCourseDates() {
     List<WebElement> dateElements = driver.findElements(COURSE_DATES);
     List<String> courseDates = new ArrayList<>();
     for (WebElement date : dateElements) {
-      courseDates.add(date.getText()); // Получаем дату для каждого курса
+      courseDates.add(date.getText());
     }
-    return courseDates; // Возвращаем список дат курсов
+    return courseDates;
   }
-
 
   private static List<LocalDate> parseCourseDates(List<String> courseDates) {
     List<LocalDate> parsedDates = new ArrayList<>();
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMMM, yyyy"); // Формат для парсинга дат
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMMM, yyyy");
 
     for (String date : courseDates) {
       if (date.contains("О дате старта будет объявлено позже")) {
-        parsedDates.add(null); // Если дата не указана, добавляем null
+        parsedDates.add(null);
       } else {
         try {
-          String dateString = date.split(" · ")[0]; // Извлекаем саму дату из строки
-          LocalDate parsedDate = LocalDate.parse(dateString, formatter); // Преобразуем строку в LocalDate
-          parsedDates.add(parsedDate); // Добавляем дату в список
+          String dateString = date.split(" · ")[0];
+          LocalDate parsedDate = LocalDate.parse(dateString, formatter);
+          parsedDates.add(parsedDate);
         } catch (Exception e) {
-          parsedDates.add(null); // Если ошибка парсинга, добавляем null
+          parsedDates.add(null);
         }
       }
     }
-    return parsedDates; // Возвращаем список дат
+    return parsedDates;
   }
 
   public String getCourseLinkByIndex(int index) {
     try {
-      System.out.println("Попытка получить ссылку на курс для индекса: " + index);
+      List<WebElement> courseElements = driver.findElements(LINKS);
 
-      // Используем локатор для нахождения всех ссылок
-      List<WebElement> courseElements = driver.findElements(LINKS); // LINKS - локатор для всех ссылок на курс
-      if (index >= 0 && index < courseElements.size()) {
-        WebElement courseElement = courseElements.get(index);
-
-        // Извлекаем атрибут href, который является фактической ссылкой
-        String href = courseElement.getAttribute("href");
-
-        if (href != null && !href.isEmpty()) {
-          // Проверка и дополнение URL, если нужно
-          /*
-          if (!href.startsWith("https://otus.ru/")) {
-            href = "https://otus.ru" + href;
-          }*/
-
-          // Выводим полную ссылку в консоль
-          System.out.println("Найдена ссылка для индекса " + index + ": " + href);
-          return href;
-        } else {
-          System.out.println("Ссылка не найдена для индекса " + index + ".");
-        }
-      } else {
+      if (index < 0 || index >= courseElements.size()) {
         System.out.println("Не удалось найти курс с индексом " + index + ".");
+        return null;
       }
+
+      WebElement courseElement = courseElements.get(index);
+      String href = courseElement.getAttribute("href");
+
+      if (href == null || href.isEmpty()) {
+        System.out.println("Ссылка для индекса " + index + " не найдена.");
+        return null;
+      }
+
+      System.out.println("Ссылка на курс с индексом " + index + ": " + href);
+      return href;
+
     } catch (Exception e) {
       System.err.println("Ошибка при получении ссылки для индекса " + index + ": " + e.getMessage());
+      return null;
     }
-    return null;
   }
 
-
   public CourseCatalogPage verifyCoursesOnLinks() {
-    System.out.println("=== Старт проверки курсов ===");
-
-    // Проверяем, инициализированы ли индексы курсов
     if (this.courseIndexes == null || this.courseIndexes.isEmpty()) {
-      throw new IllegalStateException("Индексы курсов не были найдены. Сначала вызовите findCoursesWithEarliestAndLatestDates.");
+      System.out.println("Индексы курсов не были найдены");
+      return this;
     }
     System.out.println("Индексы курсов: " + courseIndexes);
 
-    // Получаем список названий курсов
     List<String> courseNames = getCourseNames();
-    System.out.println("Список названий курсов: " + courseNames);
-
-    // Получаем список дат курсов
     List<String> courseDates = getCourseDates();
-    System.out.println("Список дат курсов: " + courseDates);
+    SoftAssertions softAssertions = new SoftAssertions();
 
-    // Итерируемся по индексам
     for (int index : courseIndexes) {
       try {
-        System.out.println("Обработка индекса: " + index);
-
-        // Получаем ссылку на курс
         String courseLink = getCourseLinkByIndex(index);
-        System.out.println("Ссылка на курс для индекса " + index + ": " + courseLink);
 
         if (courseLink != null && !courseLink.isEmpty()) {
-          // Загружаем страницу курса
-          System.out.println("Подключение к странице курса...");
           Document coursePage = Jsoup.connect(courseLink).get();
-          System.out.println("Страница курса успешно загружена.");
-
-          // Извлекаем название курса из страницы
           String actualCourseTitle = coursePage.select(TITLE_NAME_COURSE).text();
-          System.out.println("Извлечённое название курса: " + actualCourseTitle);
-
-          // Получаем ожидаемое название курса
           String expectedCourseTitle = courseNames.get(index);
-          System.out.println("Ожидаемое название курса: " + expectedCourseTitle);
 
-          // Сравниваем названия
-          if (!expectedCourseTitle.equals(actualCourseTitle)) {
-            System.err.println("Ошибка: Название курса не совпадает! Ожидалось: " + expectedCourseTitle + ", но на странице: " + actualCourseTitle);
-          } else {
+          softAssertions.assertThat(actualCourseTitle)
+              .as("Не прошла проверка названия курса для индекса " + index)
+              .isEqualTo(expectedCourseTitle);
+          if (actualCourseTitle.equals(expectedCourseTitle)) {
             System.out.println("Название курса совпадает с ожидаемым: " + expectedCourseTitle);
           }
 
-          // Извлекаем дату курса
-          String actualCourseDate = coursePage.select(START_DATE_COURSE).text(); // Используем переменную START_DATE_COURSE как селектор
-          System.out.println("Извлечённая дата курса: " + actualCourseDate);
 
-          // Проверим, если дата не пустая, иначе пропустим
+          String actualCourseDate = coursePage.select(START_DATE_COURSE).text();
+
           if (actualCourseDate != null && !actualCourseDate.isEmpty()) {
-            // Убираем возможные пробелы и другие лишние символы
-            actualCourseDate = actualCourseDate.trim();
-            System.out.println("Дата курса (после обработки): " + actualCourseDate);
+            String expectedCourseDate = courseDates.get(index)
+                .replaceAll(" · .*", "")
+                .replaceAll(",\\s*\\d{4}", "");
 
-            // Удаляем лишние части из даты, например, " · 3 месяца"
-            actualCourseDate = actualCourseDate.replaceAll(" · .*", "");
-            System.out.println("Дата курса (после удаления лишнего): " + actualCourseDate);
-
-            // Получаем ожидаемую дату из списка
-            String expectedCourseDate = courseDates.get(index);
-
-            // Убираем лишние части из ожидаемой даты, например, " · 3 месяца" и год с запятой
-            expectedCourseDate = expectedCourseDate.replaceAll(" · .*", "").replaceAll(",\\s*\\d{4}", "");
-            System.out.println("Сравниваем с ожидаемой датой (после удаления лишнего): " + expectedCourseDate);
-
-            // Сравниваем даты
-            if (!actualCourseDate.equals(expectedCourseDate)) {
-              System.err.println("Ошибка: Дата курса не совпадает! Ожидалась: " + expectedCourseDate + ", но на странице: " + actualCourseDate);
-            } else {
-              System.out.println("Дата курса совпадает с ожидаемой: " + expectedCourseDate);
+            softAssertions.assertThat(actualCourseDate)
+                .as("Не прошла проверка даты курса для индекса " + index)
+                .isEqualTo(expectedCourseDate);
+            if (actualCourseDate.equals(expectedCourseDate)) {
+              System.out.println("Дата начала курса совпадает с ожидаемой: " + expectedCourseDate);
             }
           } else {
-            System.err.println("Дата курса не найдена для индекса " + index);
+            System.err.println("Дата курса для индекса " + index + " не найдена");
           }
-
         } else {
           System.err.println("Ссылка на курс для индекса " + index + " пуста или null.");
         }
@@ -317,10 +266,7 @@ public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
         e.printStackTrace();
       }
     }
-
-    System.out.println("=== Проверка курсов завершена ===");
+    softAssertions.assertAll();
     return this;
   }
-
-
 }

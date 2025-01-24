@@ -12,7 +12,7 @@ public class CourseCatalogTest {
   @Inject
   private CourseCatalogPage courseCatalogPage;
 
-  //@Test
+  @Test
   public void testSearchAndOpenCourseByName() {
     String courseName = "Нагрузочное тестирование";
 
@@ -26,7 +26,7 @@ public class CourseCatalogTest {
   public void testFindAndCheckEarliestAndLatestCourses() {
     courseCatalogPage.open()
         .clickShowMoreButtonUntilAllLoaded()
-        .findCoursesWithEarliestAndLatestDates();
-        //.verifyCoursesOnLinks();
+        .findCoursesWithEarliestAndLatestDates()
+        .verifyCoursesOnLinks();
   }
 }
