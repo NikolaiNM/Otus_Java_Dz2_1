@@ -4,10 +4,12 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
+import commons.waiters.Waiters;
 import components.AdsBlock;
 import factory.WebDriverFactory;
 import org.openqa.selenium.WebDriver;
 import pages.CourseCardPage;
+import pages.CourseCatalogPage;
 import pages.MainPage;
 import pages.TeachPage;
 
@@ -24,10 +26,17 @@ public class GuiceModule extends AbstractModule {
     return this.driver;
   }
 
+
   @Singleton
   @Provides
-  public MainPage getMainPage() {
-    return new MainPage(driver);
+  public MainPage getMainPage(WebDriver driver, Waiters waiters) {
+    return new MainPage(driver, waiters);
+  }
+
+  @Singleton
+  @Provides
+  public CourseCatalogPage getCourseCatalogPage(WebDriver driver, Waiters waiters) {
+    return new CourseCatalogPage(driver, waiters);
   }
 
   @Singleton
