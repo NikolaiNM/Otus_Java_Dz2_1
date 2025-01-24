@@ -18,7 +18,7 @@ public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
 
 
   private static final By SHOW_MORE_BUTTON = By.cssSelector("button.sc-mrx253-0.enxKCy.sc-prqxfo-0.cXVWAS");
-  public static final By SEARCH_INPUT = By.cssSelector("input[type='search']");
+  private static final By SEARCH_INPUT = By.cssSelector("input[type='search']");
 
 
   private static final By COURSE_DATES = By.cssSelector("#__next section.sc-o4bnil-0 div.sc-18q05a6-0 > div > a > div.sc-1x9oq14-0 > div > div\n"); //  селектор по дате
