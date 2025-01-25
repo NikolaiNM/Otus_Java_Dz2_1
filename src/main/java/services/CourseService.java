@@ -5,7 +5,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 public class CourseService {
@@ -27,13 +26,5 @@ public class CourseService {
     return driver.findElements(locator).stream()
         .map(WebElement::getText)
         .collect(Collectors.toList());
-  }
-
-  public void clickCourseByName(By locator, String name) {
-    driver.findElements(locator).stream()
-        .filter(c -> c.getText().equalsIgnoreCase(name))
-        .findFirst()
-        .orElseThrow(() -> new NoSuchElementException("Курс не найден: " + name))
-        .click();
   }
 }

@@ -56,7 +56,12 @@ public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
   }
 
   public CourseCatalogPage findAndClickCourseByName(String courseName) {
-    courseService.clickCourseByName(COURSE_NAME, courseName);
+    List<WebElement> courses = driver.findElements(COURSE_NAME);
+    courses.stream()
+        .filter(course -> course.getText().equals(courseName))
+        .findFirst()
+        .orElseThrow(() -> new RuntimeException("Курс с именем " + courseName + " не найден"))
+        .click();
     return this;
   }
 
@@ -107,9 +112,12 @@ public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
   private List<Integer> findCourseIndexesByCondition(List<LocalDate> dates, Comparator<LocalDate> comparator, boolean isEarliest) {
     if (dates == null || dates.isEmpty()) return Collections.emptyList();
 
-    LocalDate targetDate = isEarliest
-        ? dates.stream().filter(Objects::nonNull).min(comparator).orElse(null)
-        : dates.stream().filter(Objects::nonNull).max(comparator).orElse(null);
+    LocalDate targetDate = dates.stream()
+        .filter(Objects::nonNull)
+        .reduce((date1, date2) -> isEarliest
+            ? comparator.compare(date1, date2) < 0 ? date1 : date2
+            : comparator.compare(date1, date2) > 0 ? date1 : date2)
+        .orElse(null);
 
     if (targetDate == null) return Collections.emptyList();
 
