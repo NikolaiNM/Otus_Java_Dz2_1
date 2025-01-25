@@ -7,17 +7,30 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import pages.CourseCatalogPage;
 import pages.MainPage;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 @ExtendWith(UIExtensions.class)
 public class MainPageTest {
 
   @Inject
   private MainPage mainPage;
+  @Inject
+  private CourseCatalogPage courseCatalogPage;
 
   @Test
   public void checkingCourseCategory() {
-    mainPage
-        .open();
+    String selectedCategory = mainPage
+        .open()
+        .openTeachingMenu()
+        .selectRandomCourseCategory()
+        .getSelectedCategoryName();
 
+    int categoryIndex = courseCatalogPage.getCategoryIndex(selectedCategory);
+
+    boolean isChecked = courseCatalogPage.isCheckboxSelectedByIndex(categoryIndex);
+    assertTrue(isChecked, "Чекбокс напротив выбранной категории не активен.");
+
+    System.out.println("Чекбокс напротив '" + selectedCategory + "' выбран.");
   }
 
 }

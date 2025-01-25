@@ -10,6 +10,7 @@ import org.openqa.selenium.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Path("/catalog/courses")
@@ -33,6 +34,9 @@ public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
 
   private List<Integer> courseIndexes; // Поле для хранения индексов курсов
 
+
+  private static final By CHECKBOXES_LOCATOR = By.cssSelector("input.sc-1fry39v-3.iDiEdJ[type='checkbox']");
+  private static final By CATEGORY_NAMES_LOCATOR = By.cssSelector("label.sc-1x9oq14-0-label");
 
 
   private final Waiters waiters;
@@ -269,4 +273,29 @@ public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
     softAssertions.assertAll();
     return this;
   }
+
+  //-------------------------------------------------------
+
+  public int getCategoryIndex(String categoryName) {
+    List<WebElement> categoryElements = $$(CATEGORY_NAMES_LOCATOR);
+
+    for (int i = 0; i < categoryElements.size(); i++) {
+      if (categoryElements.get(i).getText().equals(categoryName)) {
+        return i;
+      }
+    }
+
+    throw new NoSuchElementException("Категория '" + categoryName + "' не найдена.");
+  }
+
+  public boolean isCheckboxSelectedByIndex(int index) {
+    List<WebElement> checkboxes = $$(CHECKBOXES_LOCATOR);
+
+    if (index < 0 || index >= checkboxes.size()) {
+      throw new IndexOutOfBoundsException("Индекс " + index + " выходит за пределы списка чекбоксов.");
+    }
+
+    return checkboxes.get(index).isSelected();
+  }
+
 }
