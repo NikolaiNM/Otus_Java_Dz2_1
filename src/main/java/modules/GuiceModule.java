@@ -23,7 +23,6 @@ public class GuiceModule extends AbstractModule {
     return this.driver;
   }
 
-
   @Singleton
   @Provides
   public MainPage getMainPage(WebDriver driver, Waiters waiters) {

@@ -9,6 +9,7 @@ import org.jsoup.nodes.Document;
 import org.openqa.selenium.*;
 import services.CourseService;
 import services.CategoryService;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -18,7 +19,6 @@ import java.util.stream.IntStream;
 @Path("/catalog/courses")
 public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
 
-  // Локаторы
   private static final By SHOW_MORE_BUTTON = By.cssSelector("button.sc-mrx253-0.enxKCy.sc-prqxfo-0.cXVWAS");
   private static final By SEARCH_INPUT = By.cssSelector("input[type='search']");
   private static final By COURSE_DATES = By.cssSelector("#__next section.sc-o4bnil-0 div.sc-18q05a6-0 > div > a > div.sc-1x9oq14-0 > div > div");
@@ -28,17 +28,13 @@ public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
   private static final By CHECKBOXES_LOCATOR = By.cssSelector("input.sc-1fry39v-3.iDiEdJ[type='checkbox']");
   private static final By CATEGORY_NAMES_LOCATOR = By.cssSelector("label.sc-1x9oq14-0-label");
 
-  // Селекторы для Jsoup
   private static final String TITLE_NAME_COURSE = ".sc-1ddwpfq-1 h1";
-  private static final String
-      START_DATE_COURSE = "#__next > div.sc-1j17uuq-0.klmZDZ.sc-1b3dhyb-0.bzaXwp > main > div > section > div.sc-x072mc-0.sc-3cb1l3-1.hOtCic.galmep > div > div:nth-child(1) > p";
+  private static final String START_DATE_COURSE = "div.sc-x072mc-0.hOtCic > div > div:nth-child(1) > p";
 
-  // Сервисы
   private final CourseService courseService;
   private final CategoryService categoryService;
   private final Waiters waiters;
 
-  // Поле для хранения индексов курсов
   private List<Integer> courseIndexes;
 
   @Inject
@@ -53,7 +49,6 @@ public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
     return driver.findElement(By.tagName("h1")).getText();
   }
 
-  // Методы для работы с курсами
   public CourseCatalogPage searchForCourse(String courseName) {
     driver.findElement(SEARCH_INPUT).sendKeys(courseName);
     waiters.waitForElementVisible(COURSE_TITLES);
@@ -160,10 +155,9 @@ public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
     return href;
   }
 
-  public CourseCatalogPage verifyCoursesOnLinks() {
+  public CourseCatalogPage verifyCoursesOnLinks() throws IOException {
     if (this.courseIndexes == null || this.courseIndexes.isEmpty()) {
-      System.out.println("Индексы курсов не были найдены");
-      return this;
+      throw new IllegalStateException("Список индексов курсов пуст или не инициализирован.");
     }
 
     List<String> courseNames = courseService.getCourseNames(COURSE_NAME);
@@ -171,62 +165,45 @@ public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
     SoftAssertions softAssertions = new SoftAssertions();
 
     for (int index : courseIndexes) {
-      try {
-        String courseLink = getCourseLinkByIndex(index);
-        if (courseLink != null && !courseLink.isEmpty()) {
-          Document coursePage = Jsoup.connect(courseLink).get();
-          String actualCourseTitle = coursePage.select(TITLE_NAME_COURSE).text();
-          String expectedCourseTitle = courseNames.get(index);
+      String courseLink = getCourseLinkByIndex(index);
+      Document coursePage = Jsoup.connect(courseLink).get();
 
-          // Проверка названия курса
-          softAssertions.assertThat(actualCourseTitle)
-              .as("Не прошла проверка названия курса для индекса " + index)
-              .isEqualTo(expectedCourseTitle);
+      String actualCourseTitle = coursePage.select(TITLE_NAME_COURSE).text();
+      String expectedCourseTitle = courseNames.get(index);
+      softAssertions.assertThat(actualCourseTitle)
+          .as("Не прошла проверка названия курса для индекса " + index)
+          .isEqualTo(expectedCourseTitle);
 
-          // Логирование успешной проверки названия
-          if (actualCourseTitle.equals(expectedCourseTitle)) {
-            System.out.println("Название курса совпадает с ожидаемым: " + expectedCourseTitle);
-          }
+      if (actualCourseTitle.equals(expectedCourseTitle)) {
+        System.out.println("Название курса совпадает с ожидаемым: " + expectedCourseTitle);
+      } else {
+        System.err.println("Ошибка: название курса не совпадает. Ожидалось: '" + expectedCourseTitle + "', но найдено: '" + actualCourseTitle + "'");
+      }
 
-          // Проверка даты курса
-          String actualCourseDate = coursePage.select(START_DATE_COURSE).text();
-          if (actualCourseDate != null && !actualCourseDate.isEmpty()) {
-            String expectedCourseDate = courseDates.get(index)
-                .replaceAll(" · .*", "")
-                .replaceAll(",\\s*\\d{4}", "");
+      String actualCourseDate = coursePage.select(START_DATE_COURSE).text();
+      String expectedCourseDate = courseDates.get(index)
+          .replaceAll(" · .*", "")
+          .replaceAll(",\\s*\\d{4}", "");
+      softAssertions.assertThat(actualCourseDate)
+          .as("Не прошла проверка даты курса для индекса " + index)
+          .isEqualTo(expectedCourseDate);
 
-            softAssertions.assertThat(actualCourseDate)
-                .as("Не прошла проверка даты курса для индекса " + index)
-                .isEqualTo(expectedCourseDate);
-
-            // Логирование успешной проверки даты
-            if (actualCourseDate.equals(expectedCourseDate)) {
-              System.out.println("Дата начала курса совпадает с ожидаемой: " + expectedCourseDate);
-            }
-          } else {
-            System.err.println("Дата курса для индекса " + index + " не найдена");
-          }
-        } else {
-          System.err.println("Ссылка на курс для индекса " + index + " пуста или null.");
-        }
-      } catch (Exception e) {
-        System.err.println("Ошибка при проверке курса по ссылке для индекса " + index + ": " + e.getMessage());
+      if (actualCourseDate.equals(expectedCourseDate)) {
+        System.out.println("Дата начала курса совпадает с ожидаемой: " + expectedCourseDate);
+      } else {
+        System.err.println("Ошибка: дата курса не совпадает. Ожидалось: '" + expectedCourseDate + "', но найдено: '" + actualCourseDate + "'");
       }
     }
+
     softAssertions.assertAll();
     return this;
   }
-
-  // Методы для работы с категориями
   public int getCategoryIndex(String categoryName) {
     return categoryService.getCategoryIndex(CATEGORY_NAMES_LOCATOR, categoryName);
   }
 
   public boolean isCheckboxSelectedByIndex(int index) {
     List<WebElement> checkboxes = driver.findElements(CHECKBOXES_LOCATOR);
-    if (index < 0 || index >= checkboxes.size()) {
-      throw new IndexOutOfBoundsException("Индекс " + index + " выходит за пределы списка чекбоксов.");
-    }
     return checkboxes.get(index).isSelected();
   }
 }

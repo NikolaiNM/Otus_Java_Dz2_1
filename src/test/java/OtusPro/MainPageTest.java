@@ -1,4 +1,5 @@
 package OtusPro;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import extensions.UIExtensions;
 import jakarta.inject.Inject;
@@ -6,8 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import pages.CourseCatalogPage;
 import pages.MainPage;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(UIExtensions.class)
 public class MainPageTest {
@@ -17,7 +16,7 @@ public class MainPageTest {
   @Inject
   private CourseCatalogPage courseCatalogPage;
 
-  //@Test
+  @Test
   public void checkingCourseCategory() {
     String selectedCategory = mainPage
         .open()

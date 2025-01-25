@@ -36,17 +36,14 @@ public class MainPage extends AbsBasePage<MainPage> {
   }
 
   public MainPage selectRandomCourseCategory() {
-    // Ждем, пока список категорий станет видимым
     waiters.waitForCondition(ExpectedConditions.visibilityOfElementLocated(COURSE_CATEGORIES_LOCATOR));
 
-    // Получаем все элементы категорий
     List<WebElement> categories = $$(COURSE_CATEGORIES_LOCATOR);
 
-    // Выбираем случайную категорию
     if (!categories.isEmpty()) {
-      WebElement randomCategory = getRandomElement(categories); // Инициализируем переменную randomCategory
-      selectedCategoryName = randomCategory.getText().replaceAll("\\(.*\\)", "").trim(); // Убираем скобки с цифрами
-      randomCategory.click(); // Кликаем на случайную категорию
+      WebElement randomCategory = getRandomElement(categories);
+      selectedCategoryName = randomCategory.getText().replaceAll("\\(.*\\)", "").trim();
+      randomCategory.click();
     } else {
       throw new RuntimeException("Категории курсов не найдены.");
     }

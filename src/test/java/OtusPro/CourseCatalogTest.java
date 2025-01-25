@@ -8,7 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import pages.CourseCatalogPage;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-
+import java.io.IOException;
 
 
 @ExtendWith(UIExtensions.class)
@@ -17,7 +17,7 @@ public class CourseCatalogTest {
   @Inject
   private CourseCatalogPage courseCatalogPage;
 
-  //@ParameterizedTest
+  @ParameterizedTest
   @ValueSource(strings = {"Нагрузочное тестирование", "Разработчик на Spring Framework", "Java Developer. Advanced"})
   public void testSearchAndOpenCourseByName(String courseName) {
 
@@ -36,7 +36,7 @@ public class CourseCatalogTest {
   }
 
   @Test
-  public void testFindAndCheckEarliestAndLatestCourses() {
+  public void testFindAndCheckEarliestAndLatestCourses() throws IOException {
 
     courseCatalogPage.open()
         .clickShowMoreButtonUntilAllLoaded()
