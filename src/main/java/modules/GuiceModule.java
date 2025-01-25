@@ -1,17 +1,14 @@
 package modules;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Inject;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import commons.waiters.Waiters;
 import components.AdsBlock;
 import factory.WebDriverFactory;
 import org.openqa.selenium.WebDriver;
-import pages.CourseCardPage;
 import pages.CourseCatalogPage;
 import pages.MainPage;
-import pages.TeachPage;
 
 public class GuiceModule extends AbstractModule {
 
@@ -26,7 +23,6 @@ public class GuiceModule extends AbstractModule {
     return this.driver;
   }
 
-
   @Singleton
   @Provides
   public MainPage getMainPage(WebDriver driver, Waiters waiters) {
@@ -37,18 +33,6 @@ public class GuiceModule extends AbstractModule {
   @Provides
   public CourseCatalogPage getCourseCatalogPage(WebDriver driver, Waiters waiters) {
     return new CourseCatalogPage(driver, waiters);
-  }
-
-  @Singleton
-  @Provides
-  public TeachPage getTeachPage() {
-    return new TeachPage(driver);
-  }
-
-  @Singleton
-  @Provides
-  public CourseCardPage getCourseCardPage() {
-    return new CourseCardPage(driver);
   }
 
   @Singleton
