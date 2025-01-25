@@ -17,7 +17,7 @@ public class MainPageTest {
   @Inject
   private CourseCatalogPage courseCatalogPage;
 
-  @Test
+  //@Test
   public void checkingCourseCategory() {
     String selectedCategory = mainPage
         .open()

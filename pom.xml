@@ -15,6 +15,7 @@
 
         <selenium.version>4.27.0</selenium.version>
         <junit.version>5.11.4</junit.version>
+        <junit.param.version>5.9.2</junit.param.version>
         <assertj.version>3.26.3</assertj.version>
         <guice.version>7.0.0</guice.version>
         <webdrivermanager.version>5.9.2</webdrivermanager.version>
@@ -45,6 +46,13 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>${junit.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <version>${junit.param.version}</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>

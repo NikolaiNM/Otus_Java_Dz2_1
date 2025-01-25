@@ -19,7 +19,7 @@ public class Waiters {
     );
   }
 
-  public boolean waitForCondition(ExpectedCondition condition) {
+  public boolean waitForCondition(ExpectedCondition<?> condition) {
     try {
       webDriverWait.until(condition);
       return true;
@@ -28,22 +28,23 @@ public class Waiters {
     }
   }
 
-  public boolean waitForElementBylocator(By locator) {
+  public boolean waitForElementByLocator(By locator) {
     return this.waitForCondition(ExpectedConditions.presenceOfElementLocated(locator));
   }
 
-  public boolean waitForElementVisibleElement(WebElement element) {
+  public boolean waitForElementVisible(WebElement element) {
     return this.waitForCondition(ExpectedConditions.visibilityOf(element));
   }
 
-  public boolean waitForElementVisibleByLocator(By locator) {
+  public boolean waitForElementVisible(By locator) {
     return this.waitForCondition(ExpectedConditions.visibilityOfElementLocated(locator));
   }
 
-  public boolean waitForElementClickableByLocator(By locator) {
+  public boolean waitForElementClickable(By locator) {
     return this.waitForCondition(ExpectedConditions.elementToBeClickable(locator));
   }
 
-
-
+  public boolean waitForElementClickable(WebElement element) {
+    return this.waitForCondition(ExpectedConditions.elementToBeClickable(element));
+  }
 }

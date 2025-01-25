@@ -23,16 +23,6 @@ public class MainPage extends AbsBasePage<MainPage> {
     this.waiters = waiters;
   }
 
-  public TeachPage clickNewTechButton() {
-    By createTeacherButtonLocator = By.cssSelector("a[href='/teach']");
-
-    WebElement createTeachButton = $(createTeacherButtonLocator);
-    waiters.waitForCondition(ExpectedConditions.elementToBeClickable(createTeacherButtonLocator));
-    createTeachButton.click();
-
-    return (TeachPage) page(TeachPage.class);
-  }
-
   public MainPage openTeachingMenu() {
     WebElement teachingButton = $(MENU_TEACHING_BUTTON);
     waiters.waitForCondition(ExpectedConditions.elementToBeClickable(MENU_TEACHING_BUTTON));
