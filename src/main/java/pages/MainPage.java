@@ -14,7 +14,7 @@ import java.util.Random;
 public class MainPage extends AbsBasePage<MainPage> {
 
   private static final By MENU_TEACHING_BUTTON = By.cssSelector("span[title='Обучение']");
-  private static final By COURSE_CATEGORIES_LOCATOR = By.cssSelector("div.sc-1kjc6dh-2 a[href^='https://otus.ru/categories/']");
+  private static final By COURSE_CATEGORIES_LOCATOR = By.cssSelector("a[href*='categories'][class*='dNitgt']");
   private String selectedCategoryName;
 
   @Inject

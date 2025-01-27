@@ -7,7 +7,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
 import java.util.List;
 
-public class AbsCommons {
+public abstract class AbsCommons {
 
   protected WebDriver driver;
   protected Waiters waiters;
