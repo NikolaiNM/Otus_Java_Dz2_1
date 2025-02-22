@@ -63,7 +63,6 @@ public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
         .findFirst()
         .orElseThrow(() -> new RuntimeException("Курс с именем " + courseName + " не найден"));
 
-    // Добавляем выделение перед кликом
     highlightElement(targetCourse, "3px solid #0000ff");
     addFocusListener(targetCourse);
 
