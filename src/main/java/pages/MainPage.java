@@ -47,7 +47,6 @@ public class MainPage extends AbsBasePage<MainPage> {
     if (!categories.isEmpty()) {
       WebElement randomCategory = getRandomElement(categories);
 
-      // Добавлено выделение элемента перед кликом
       highlightElement(randomCategory, "3px solid #ff0000");
       addFocusListener(randomCategory);
 
