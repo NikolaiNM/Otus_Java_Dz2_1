@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -29,7 +30,7 @@ public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
   private static final By CATEGORY_NAMES_LOCATOR = By.cssSelector("label.sc-1x9oq14-0-label");
 
   private static final String TITLE_NAME_COURSE = ".sc-1ddwpfq-1 h1";
-  private static final String START_DATE_COURSE = "div.sc-x072mc-0.hOtCic > div > div:nth-child(1) > p";
+  private static final String START_DATE_COURSE = "div.sc-x072mc-0.hOtCic.galmep div.sc-3cb1l3-4.kGoYMV:first-child > p.sc-1x9oq14-0.sc-3cb1l3-0.dgWykw";
 
   private final CourseService courseService;
   private final CategoryService categoryService;
@@ -64,15 +65,21 @@ public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
         .click();
     return this;
   }
-
   public CourseCatalogPage clickShowMoreButtonUntilAllLoaded() {
     boolean buttonFound = true;
+
     while (buttonFound) {
       try {
         WebElement button = driver.findElement(SHOW_MORE_BUTTON);
         if (button.isDisplayed()) {
-          waiters.waitForElementClickable(button); // Используем исправленный метод
+          ((JavascriptExecutor) driver).executeScript(
+              "arguments[0].scrollIntoView({block: 'center', inline: 'center'});",
+              button
+          );
+
+          waiters.waitForElementClickable(button);
           button.click();
+
           waiters.waitForCondition(webDriver -> {
             try {
               WebElement newButton = driver.findElement(SHOW_MORE_BUTTON);
@@ -82,11 +89,13 @@ public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
             }
           });
         }
+      } catch (NoSuchElementException e) {
+        buttonFound = false;
       } catch (Exception e) {
         buttonFound = false;
       }
     }
-    System.out.println("Показан весь список курсов");
+
     return this;
   }
 
