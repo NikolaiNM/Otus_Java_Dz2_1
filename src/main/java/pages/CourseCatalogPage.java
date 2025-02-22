@@ -58,13 +58,34 @@ public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
 
   public CourseCatalogPage findAndClickCourseByName(String courseName) {
     List<WebElement> courses = driver.findElements(COURSE_NAME);
-    courses.stream()
+    WebElement targetCourse = courses.stream()
         .filter(course -> course.getText().equals(courseName))
         .findFirst()
-        .orElseThrow(() -> new RuntimeException("Курс с именем " + courseName + " не найден"))
-        .click();
+        .orElseThrow(() -> new RuntimeException("Курс с именем " + courseName + " не найден"));
+
+    // Добавляем выделение перед кликом
+    highlightElement(targetCourse, "3px solid #0000ff");
+    addFocusListener(targetCourse);
+
+    targetCourse.click();
     return this;
   }
+
+  private void highlightElement(WebElement element, String style) {
+    JavascriptExecutor js = (JavascriptExecutor) driver;
+    js.executeScript("arguments[0].style.border = arguments[1]", element, style);
+  }
+
+  private void addFocusListener(WebElement element) {
+    JavascriptExecutor js = (JavascriptExecutor) driver;
+    js.executeScript(
+        "arguments[0].addEventListener('focus', function() { "
+            + "  this.style.boxShadow = '0 0 5px 2px rgba(0, 255, 0, 0.5)'; "
+            + "});",
+        element
+    );
+  }
+
   public CourseCatalogPage clickShowMoreButtonUntilAllLoaded() {
     boolean buttonFound = true;
 
