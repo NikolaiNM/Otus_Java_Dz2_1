@@ -4,6 +4,7 @@ import annotations.Path;
 import com.google.inject.Inject;
 import commons.waiters.Waiters;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -16,10 +17,13 @@ public class MainPage extends AbsBasePage<MainPage> {
   private static final By MENU_TEACHING_BUTTON = By.cssSelector("span[title='Обучение']");
   private static final By COURSE_CATEGORIES_LOCATOR = By.cssSelector("a[href*='categories'][class*='dNitgt']");
   private String selectedCategoryName;
+  private final WebDriver driver;
+  private final Waiters waiters;
 
   @Inject
   public MainPage(WebDriver driver, Waiters waiters) {
     super(driver);
+    this.driver = driver;
     this.waiters = waiters;
   }
 
@@ -42,6 +46,11 @@ public class MainPage extends AbsBasePage<MainPage> {
 
     if (!categories.isEmpty()) {
       WebElement randomCategory = getRandomElement(categories);
+
+      // Добавлено выделение элемента перед кликом
+      highlightElement(randomCategory, "3px solid #ff0000");
+      addFocusListener(randomCategory);
+
       selectedCategoryName = randomCategory.getText().replaceAll("\\(.*\\)", "").trim();
       randomCategory.click();
     } else {
@@ -51,8 +60,22 @@ public class MainPage extends AbsBasePage<MainPage> {
     return this;
   }
 
+  private void highlightElement(WebElement element, String style) {
+    JavascriptExecutor js = (JavascriptExecutor) driver;
+    js.executeScript("arguments[0].style.border = arguments[1]", element, style);
+  }
+
+  private void addFocusListener(WebElement element) {
+    JavascriptExecutor js = (JavascriptExecutor) driver;
+    js.executeScript(
+        "arguments[0].addEventListener('focus', function() { "
+            + "  this.style.boxShadow = '0 0 5px 2px rgba(0, 255, 0, 0.5)'; "
+            + "});",
+        element
+    );
+  }
+
   public String getSelectedCategoryName() {
     return selectedCategoryName;
   }
-
 }
