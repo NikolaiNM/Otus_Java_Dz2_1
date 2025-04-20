@@ -1,6 +1,7 @@
 package scopeds;
 
 import io.cucumber.guice.ScenarioScoped;
+import java.util.List;
 
 @ScenarioScoped
 public class ScenarioContext {
