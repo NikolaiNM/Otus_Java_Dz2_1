@@ -15,7 +15,7 @@
 
         <selenium.version>4.29.0</selenium.version>
         <junit.version>5.11.4</junit.version>
-        <junit.param.version>5.9.2</junit.param.version>
+        <junit.param.version>5.11.2</junit.param.version>
         <assertj.version>3.26.3</assertj.version>
         <guice.version>7.0.0</guice.version>
         <webdrivermanager.version>5.9.3</webdrivermanager.version>
@@ -104,6 +104,14 @@
             <artifactId>cucumber-guice</artifactId>
             <version>${cucumber-guice.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit-platform-engine</artifactId>
+            <version>${cucumber-java.version}</version>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-suite</artifactId>

@@ -5,6 +5,7 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import scopeds.ScenarioCucumberScoped;
 import java.time.Duration;
 
 public class Waiters {
@@ -12,12 +13,14 @@ public class Waiters {
   private WebDriverWait webDriverWait;
 
   @Inject
-  public Waiters(WebDriver driver) {
+  public Waiters(ScenarioCucumberScoped scenarioScope) {
+    WebDriver driver = scenarioScope.getDriver();
     this.webDriverWait = new WebDriverWait(
         driver,
-        Duration.ofSeconds(Integer.parseInt(System.getProperty("webdriver.waiter.timeout")))
+        Duration.ofSeconds(Integer.parseInt(System.getProperty("webdriver.waiter.timeout", "5")))
     );
   }
+
 
   public boolean waitForCondition(ExpectedCondition<?> condition) {
     try {

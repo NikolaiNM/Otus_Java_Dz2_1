@@ -15,9 +15,9 @@ public abstract class AbsCommons {
   protected Waiters waiters;
 
   @Inject
-  public AbsCommons(ScenarioCucumberScoped scenarioCucumberScoped) {
-    this.driver = scenarioCucumberScoped.getDriver();
-    this.waiters = new Waiters(driver);
+  public AbsCommons(ScenarioCucumberScoped cucumberScoped) {
+    this.driver = cucumberScoped.getDriver();
+    this.waiters = new Waiters(cucumberScoped);
 
     PageFactory.initElements(driver, this);
   }

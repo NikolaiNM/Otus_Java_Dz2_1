@@ -7,6 +7,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import scopeds.ScenarioContext;
 import scopeds.ScenarioCucumberScoped;
 import java.util.List;
 import java.util.Random;
@@ -22,6 +23,9 @@ public class MainPage extends AbsBasePage<MainPage> {
   public MainPage(ScenarioCucumberScoped scenarioCucumberScoped, Waiters waiters) {
     super(scenarioCucumberScoped);
   }
+
+  @Inject
+  private ScenarioContext context;
 
   public MainPage openTeachingMenu() {
     WebElement teachingButton = $(MENU_TEACHING_BUTTON);
@@ -46,7 +50,8 @@ public class MainPage extends AbsBasePage<MainPage> {
       highlightElement(randomCategory, "3px solid #ff0000");
       addFocusListener(randomCategory);
 
-      selectedCategoryName = randomCategory.getText().replaceAll("\\(.*\\)", "").trim();
+      String categoryName = randomCategory.getText().replaceAll("\\(.*\\)", "").trim();
+      context.setSelectedCategoryName(categoryName); // Сохраняем в контекст
       randomCategory.click();
     } else {
       throw new RuntimeException("Категории курсов не найдены.");
@@ -70,7 +75,4 @@ public class MainPage extends AbsBasePage<MainPage> {
     );
   }
 
-  public String getSelectedCategoryName() {
-    return selectedCategoryName;
-  }
 }

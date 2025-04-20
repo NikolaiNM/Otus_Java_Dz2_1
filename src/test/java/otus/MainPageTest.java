@@ -1,14 +1,14 @@
 //package otus;
 //import static org.junit.jupiter.api.Assertions.assertTrue;
 //
-//import extensions.UIExtensions;
+////import extensions.UIExtensions;
 //import jakarta.inject.Inject;
 //import org.junit.jupiter.api.Test;
 //import org.junit.jupiter.api.extension.ExtendWith;
 //import pages.CourseCatalogPage;
 //import pages.MainPage;
 //
-//@ExtendWith(UIExtensions.class)
+////@ExtendWith(UIExtensions.class)
 //public class MainPageTest {
 //
 //  @Inject
