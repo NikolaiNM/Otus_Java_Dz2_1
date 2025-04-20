@@ -7,6 +7,7 @@ import org.assertj.core.api.SoftAssertions;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.openqa.selenium.*;
+import scopeds.ScenarioContext;
 import scopeds.ScenarioCucumberScoped;
 import services.CourseService;
 import services.CategoryService;
@@ -36,13 +37,17 @@ public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
   private final CourseService courseService;
   private final CategoryService categoryService;
   private final Waiters waiters;
+  private final ScenarioContext scenarioContext;
 
   private List<Integer> courseIndexes;
 
   @Inject
-  public CourseCatalogPage(ScenarioCucumberScoped scenarioCucumberScoped, Waiters waiters) {
+  public CourseCatalogPage(ScenarioCucumberScoped scenarioCucumberScoped,
+                           Waiters waiters,
+                           ScenarioContext scenarioContext) { // Добавлен параметр
     super(scenarioCucumberScoped);
     this.waiters = waiters;
+    this.scenarioContext = scenarioContext; // Инициализация
     this.courseService = new CourseService(driver, waiters);
     this.categoryService = new CategoryService(driver);
   }
@@ -124,9 +129,11 @@ public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
     List<String> courseDates = courseService.getCourseDates(COURSE_DATES);
     List<LocalDate> parsedDates = parseCourseDates(courseDates);
 
-    this.courseIndexes = new ArrayList<>();
-    this.courseIndexes.addAll(findCourseIndexesWithEarliestDate(parsedDates));
-    this.courseIndexes.addAll(findCourseIndexesWithLatestDate(parsedDates));
+    List<Integer> indexes = new ArrayList<>();
+    indexes.addAll(findCourseIndexesWithEarliestDate(parsedDates));
+    indexes.addAll(findCourseIndexesWithLatestDate(parsedDates));
+
+    scenarioContext.setCourseIndexes(indexes);
 
     return this;
   }
@@ -194,7 +201,9 @@ public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
   }
 
   public CourseCatalogPage verifyCoursesOnLinks() throws IOException {
-    if (this.courseIndexes == null || this.courseIndexes.isEmpty()) {
+    List<Integer> courseIndexes = scenarioContext.getCourseIndexes();
+
+    if (courseIndexes == null || courseIndexes.isEmpty()) {
       throw new IllegalStateException("Список индексов курсов пуст или не инициализирован.");
     }
 
