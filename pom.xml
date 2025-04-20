@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>ru.Otus</groupId>
-    <artifactId>ProDz1</artifactId>
+    <artifactId>ProDz2</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
@@ -19,6 +19,8 @@
         <assertj.version>3.26.3</assertj.version>
         <guice.version>7.0.0</guice.version>
         <webdrivermanager.version>5.9.3</webdrivermanager.version>
+        <cucumber-java.version>7.20.1</cucumber-java.version>
+        <cucumber-guice.version>7.20.1</cucumber-guice.version>
         <spotbags.version>4.8.0</spotbags.version>
         <slf4j-nop.version>2.0.16</slf4j-nop.version>
         <jsoup.version>1.18.3</jsoup.version>
@@ -90,6 +92,25 @@
             <artifactId>jsoup</artifactId>
             <version>${jsoup.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <version>${cucumber-java.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-guice</artifactId>
+            <version>${cucumber-guice.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite</artifactId>
+            <version>1.11.2</version>
+            <scope>test</scope>
+        </dependency>
+
 
     </dependencies>
 

@@ -7,6 +7,7 @@ import org.assertj.core.api.SoftAssertions;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.openqa.selenium.*;
+import scopeds.ScenarioCucumberScoped;
 import services.CourseService;
 import services.CategoryService;
 import java.io.IOException;
@@ -39,8 +40,8 @@ public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
   private List<Integer> courseIndexes;
 
   @Inject
-  public CourseCatalogPage(WebDriver driver, Waiters waiters) {
-    super(driver);
+  public CourseCatalogPage(ScenarioCucumberScoped scenarioCucumberScoped, Waiters waiters) {
+    super(scenarioCucumberScoped);
     this.waiters = waiters;
     this.courseService = new CourseService(driver, waiters);
     this.categoryService = new CategoryService(driver);

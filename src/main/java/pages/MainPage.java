@@ -5,9 +5,9 @@ import com.google.inject.Inject;
 import commons.waiters.Waiters;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import scopeds.ScenarioCucumberScoped;
 import java.util.List;
 import java.util.Random;
 
@@ -17,14 +17,10 @@ public class MainPage extends AbsBasePage<MainPage> {
   private static final By MENU_TEACHING_BUTTON = By.cssSelector("span[title='Обучение']");
   private static final By COURSE_CATEGORIES_LOCATOR = By.cssSelector("a[href*='categories'][class*='dNitgt']");
   private String selectedCategoryName;
-  private final WebDriver driver;
-  private final Waiters waiters;
 
   @Inject
-  public MainPage(WebDriver driver, Waiters waiters) {
-    super(driver);
-    this.driver = driver;
-    this.waiters = waiters;
+  public MainPage(ScenarioCucumberScoped scenarioCucumberScoped, Waiters waiters) {
+    super(scenarioCucumberScoped);
   }
 
   public MainPage openTeachingMenu() {

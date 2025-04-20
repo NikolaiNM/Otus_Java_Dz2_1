@@ -4,22 +4,25 @@ import static org.assertj.core.api.Assertions.assertThat;
 import annotations.Path;
 import annotations.UrlData;
 import annotations.UrlTemplate;
+import com.google.inject.Inject;
 import commons.AbsCommons;
 import exceptions.PathPageExceptions;
 import exceptions.UrlDataExceptions;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import scopeds.ScenarioCucumberScoped;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
 public abstract class AbsBasePage<T> extends AbsCommons {
 
-  private String baseUrl = System.getProperty("base.url");
+  private String baseUrl = System.getProperty("base.url", "https://otus.ru");
 
-  public AbsBasePage(WebDriver driver) {
-    super(driver);
+  @Inject
+  public AbsBasePage(ScenarioCucumberScoped scenarioCucumberScoped) {
+    super(scenarioCucumberScoped);
 
     baseUrl = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
   }

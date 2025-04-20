@@ -3,18 +3,21 @@ package components;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import annotations.Component;
+import com.google.inject.Inject;
 import commons.AbsCommons;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import scopeds.ScenarioCucumberScoped;
 
 public abstract class AbsBaseComponent extends AbsCommons {
 
-  public AbsBaseComponent(WebDriver driver) {
-    super(driver);
+  @Inject
+  public AbsBaseComponent(ScenarioCucumberScoped scenarioCucumberScoped) {
+    super(scenarioCucumberScoped);
   }
 
   {
-    assertThat(waiters.waitForElementVisible(getByOfComponent())) // Исправлено на waitForElementVisible
+    assertThat(waiters.waitForElementVisible(getByOfComponent()))
         .as("Ошибка: компонент не видим на странице")
         .isTrue();
   }

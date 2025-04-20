@@ -1,12 +1,15 @@
 package components.popups;
 
+import com.google.inject.Inject;
 import commons.AbsCommons;
 import org.openqa.selenium.WebDriver;
+import scopeds.ScenarioCucumberScoped;
 
 public class AuthPopup extends AbsCommons implements IPopup<AuthPopup> {
 
-  public AuthPopup(WebDriver driver) {
-    super(driver);
+  @Inject
+  public AuthPopup(ScenarioCucumberScoped scenarioCucumberScoped) {
+    super(scenarioCucumberScoped);
   }
 
   @Override
