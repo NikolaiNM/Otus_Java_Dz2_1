@@ -7,6 +7,7 @@ import org.assertj.core.api.SoftAssertions;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.openqa.selenium.*;
+import scopeds.ScenarioContext;
 import scopeds.ScenarioCucumberScoped;
 import services.CourseService;
 import services.CategoryService;
@@ -25,7 +26,7 @@ public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
   private static final By SEARCH_INPUT = By.cssSelector("input[type='search']");
   private static final By COURSE_DATES = By.cssSelector("#__next section.sc-o4bnil-0 div.sc-18q05a6-0 > div > a > div.sc-1x9oq14-0 > div > div");
   private static final By COURSE_NAME = By.cssSelector("#__next section.sc-o4bnil-0 div.sc-18q05a6-0 > div > a > h6 > div");
-  private static final By COURSE_TITLES = By.cssSelector("a.sc-zzdkm7-0 h6.sc-1x9oq14-0");
+  private static final By COURSE_TITLES = By.cssSelector("#__next section.sc-o4bnil-0 div.sc-18q05a6-0 > div > a.sc-zzdkm7-0[href^='/'] h6.sc-1x9oq14-0");
   private static final By LINKS = By.cssSelector("#__next > div.sc-1j17uuq-0.klmZDZ.sc-1u2d5lq-0.oYOFo > main > div > section.sc-o4bnil-0.riKpM > div.sc-18q05a6-0.incGfX > div a[href^='/']");
   private static final By CHECKBOXES_LOCATOR = By.cssSelector("input.sc-1fry39v-3.iDiEdJ[type='checkbox']");
   private static final By CATEGORY_NAMES_LOCATOR = By.cssSelector("label.sc-1x9oq14-0-label");
@@ -36,13 +37,15 @@ public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
   private final CourseService courseService;
   private final CategoryService categoryService;
   private final Waiters waiters;
+  private final ScenarioContext scenarioContext;
 
   private List<Integer> courseIndexes;
 
   @Inject
-  public CourseCatalogPage(ScenarioCucumberScoped scenarioCucumberScoped, Waiters waiters) {
+  public CourseCatalogPage(ScenarioCucumberScoped scenarioCucumberScoped, Waiters waiters, ScenarioContext scenarioContext) {
     super(scenarioCucumberScoped);
     this.waiters = waiters;
+    this.scenarioContext = scenarioContext;
     this.courseService = new CourseService(driver, waiters);
     this.categoryService = new CategoryService(driver);
   }
@@ -124,9 +127,11 @@ public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
     List<String> courseDates = courseService.getCourseDates(COURSE_DATES);
     List<LocalDate> parsedDates = parseCourseDates(courseDates);
 
-    this.courseIndexes = new ArrayList<>();
-    this.courseIndexes.addAll(findCourseIndexesWithEarliestDate(parsedDates));
-    this.courseIndexes.addAll(findCourseIndexesWithLatestDate(parsedDates));
+    List<Integer> indexes = new ArrayList<>();
+    indexes.addAll(findCourseIndexesWithEarliestDate(parsedDates));
+    indexes.addAll(findCourseIndexesWithLatestDate(parsedDates));
+
+    scenarioContext.setCourseIndexes(indexes);
 
     return this;
   }
@@ -194,7 +199,9 @@ public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
   }
 
   public CourseCatalogPage verifyCoursesOnLinks() throws IOException {
-    if (this.courseIndexes == null || this.courseIndexes.isEmpty()) {
+    List<Integer> courseIndexes = scenarioContext.getCourseIndexes();
+
+    if (courseIndexes == null || courseIndexes.isEmpty()) {
       throw new IllegalStateException("Список индексов курсов пуст или не инициализирован.");
     }
 

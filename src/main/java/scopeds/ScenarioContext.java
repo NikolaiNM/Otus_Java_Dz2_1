@@ -7,6 +7,7 @@ import java.util.List;
 public class ScenarioContext {
   private String selectedCategoryName;
   private String currentCourseName;
+  private List<Integer> courseIndexes;
 
   public String getSelectedCategoryName() {
     return selectedCategoryName;
@@ -23,4 +24,13 @@ public class ScenarioContext {
   public void setCurrentCourseName(String currentCourseName) {
     this.currentCourseName = currentCourseName;
   }
+
+  public List<Integer> getCourseIndexes() {
+    return courseIndexes;
+  }
+
+  public void setCourseIndexes(List<Integer> courseIndexes) {
+    this.courseIndexes = courseIndexes;
+  }
+
 }
