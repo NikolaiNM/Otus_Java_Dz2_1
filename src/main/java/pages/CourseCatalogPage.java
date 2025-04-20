@@ -42,12 +42,10 @@ public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
   private List<Integer> courseIndexes;
 
   @Inject
-  public CourseCatalogPage(ScenarioCucumberScoped scenarioCucumberScoped,
-                           Waiters waiters,
-                           ScenarioContext scenarioContext) { // Добавлен параметр
+  public CourseCatalogPage(ScenarioCucumberScoped scenarioCucumberScoped, Waiters waiters, ScenarioContext scenarioContext) {
     super(scenarioCucumberScoped);
     this.waiters = waiters;
-    this.scenarioContext = scenarioContext; // Инициализация
+    this.scenarioContext = scenarioContext;
     this.courseService = new CourseService(driver, waiters);
     this.categoryService = new CategoryService(driver);
   }
