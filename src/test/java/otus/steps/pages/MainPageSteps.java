@@ -1,8 +1,7 @@
 package otus.steps.pages;
 
 import com.google.inject.Inject;
-import io.cucumber.java.ru.Когда;
-import io.cucumber.java.ru.Пусть;
+import io.cucumber.java.ru.*;
 import pages.CourseCatalogPage;
 import pages.MainPage;
 
@@ -14,17 +13,17 @@ public class MainPageSteps {
   @Inject
   private CourseCatalogPage courseCatalogPage;
 
-  @Пусть("я открываю главную страницу OTUS")
+  @Дано("Открыть главную страницу OTUS")
   public void openMainePage() {
     mainPage.open();
   }
 
-  @Когда("я открываю меню 'Обучение'")
+  @Если("Открыть меню 'Обучение'")
   public void openTeachingMenu() {
     mainPage.openTeachingMenu();
   }
 
-  @Когда("выбираю случайную категорию курсов")
+  @И("Выбирать случайную категорию курсов")
   public void selectRandomCourseCategory() {
     mainPage.selectRandomCourseCategory();
   }
