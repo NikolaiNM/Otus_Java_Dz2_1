@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import pages.CourseCatalogPage;
 import scopeds.ScenarioContext;
 
+import java.io.IOException;
 import java.util.List;
 
 public class CourseCatalogSteps {
@@ -56,6 +57,16 @@ public class CourseCatalogSteps {
   public void loadAllCourses() {
     courseCatalogPage.clickShowMoreButtonUntilAllLoaded();
     System.out.println("Все курсы загружены");
+  }
+
+  @И("Система находит курсы с самыми ранними и самыми поздними датами старта")
+  public void findCoursesWithExtremeDates() {
+    courseCatalogPage.findCoursesWithEarliestAndLatestDates();
+  }
+
+  @Тогда("В карточках найденных курсов отображаются корректные названия")
+  public void verifyCourseNamesAndDates() throws IOException {
+    courseCatalogPage.verifyCoursesOnLinks();
   }
 
 }
