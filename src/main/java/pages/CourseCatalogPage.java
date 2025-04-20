@@ -25,7 +25,7 @@ public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
   private static final By SEARCH_INPUT = By.cssSelector("input[type='search']");
   private static final By COURSE_DATES = By.cssSelector("#__next section.sc-o4bnil-0 div.sc-18q05a6-0 > div > a > div.sc-1x9oq14-0 > div > div");
   private static final By COURSE_NAME = By.cssSelector("#__next section.sc-o4bnil-0 div.sc-18q05a6-0 > div > a > h6 > div");
-  private static final By COURSE_TITLES = By.cssSelector("a.sc-zzdkm7-0 h6.sc-1x9oq14-0");
+  private static final By COURSE_TITLES = By.cssSelector("#__next section.sc-o4bnil-0 div.sc-18q05a6-0 > div > a.sc-zzdkm7-0[href^='/'] h6.sc-1x9oq14-0");
   private static final By LINKS = By.cssSelector("#__next > div.sc-1j17uuq-0.klmZDZ.sc-1u2d5lq-0.oYOFo > main > div > section.sc-o4bnil-0.riKpM > div.sc-18q05a6-0.incGfX > div a[href^='/']");
   private static final By CHECKBOXES_LOCATOR = By.cssSelector("input.sc-1fry39v-3.iDiEdJ[type='checkbox']");
   private static final By CATEGORY_NAMES_LOCATOR = By.cssSelector("label.sc-1x9oq14-0-label");
